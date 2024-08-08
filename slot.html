@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ไม่แตกไม่แจกไม่จ่ายจ้าาาาาา</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spin {
+            0% { transform: translateY(-300%); }
+            100% { transform: translateY(0); }
+        }
+        .spinning {
+            animation: spin 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .gold-gradient {
+            background: linear-gradient(45deg, #d4af37 0%, #f9d423 50%, #d4af37 100%);
+        }
+        .neon-glow {
+            box-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700, 0 0 30px #ffd700, 0 0 40px #ff00de;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 min-h-screen flex flex-col justify-center items-center p-4">
+    <div class="bg-gray-800 p-4 sm:p-8 rounded-2xl shadow-2xl max-w-md w-full">
+        <h1 class="text-2xl sm:text-3xl font-extrabold mb-4 sm:mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">ไม่แตกไม่แจกไม่จ่ายด้วยจ้าาาาาา</h1>
+        <div class="flex justify-center space-x-2 sm:space-x-4 mb-4 sm:mb-8">
+            <div id="slot1" class="w-16 h-16 sm:w-20 sm:h-20 gold-gradient rounded-lg flex justify-center items-center text-3xl sm:text-4xl overflow-hidden neon-glow">?</div>
+            <div id="slot2" class="w-16 h-16 sm:w-20 sm:h-20 gold-gradient rounded-lg flex justify-center items-center text-3xl sm:text-4xl overflow-hidden neon-glow">?</div>
+            <div id="slot3" class="w-16 h-16 sm:w-20 sm:h-20 gold-gradient rounded-lg flex justify-center items-center text-3xl sm:text-4xl overflow-hidden neon-glow">?</div>
+        </div>
+        <div class="mb-4">
+            <label for="winrate" class="block text-white mb-2 text-sm sm:text-base">กำหนด Winrate:</label>
+            <select id="winrate" class="w-full bg-gray-700 text-white p-2 rounded text-sm sm:text-base">
+                <option value="0">0%</option>
+                <option value="50" selected>50%</option>
+                <option value="100">100%</option>
+            </select>
+        </div>
+        <button id="spinButton" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 mb-4 text-sm sm:text-base">
+            หมุน!
+        </button>
+        <div id="result" class="text-center text-lg sm:text-xl font-bold text-yellow-400 mb-4"></div>
+        <div class="flex justify-between items-center text-sm sm:text-base">
+            <div id="balance" class="text-white">เครดิต: 1000</div>
+            <div id="stats" class="text-white">ชนะ: 0 / เล่น: 0</div>
+        </div>
+    </div>
+    <div class="mt-6 sm:mt-8 text-white text-center max-w-md px-4">
+        <h2 class="text-lg sm:text-xl font-bold mb-2">เงื่อนไขการชนะ</h2>
+        <ul class="text-left list-disc pl-5 text-sm sm:text-base">
+            <li>💎💎💎 = 1000 เครดิต (แจ็คพอต)</li>
+            <li> 7 7 7 = 500 เครดิต</li>
+            <li>🍒🍒🍒 = 200 เครดิต</li>
+            <li>สัญลักษณ์เหมือนกัน 3 อัน = 100 เครดิต</li>
+            <li>💎💎 (2 อัน) = 50 เครดิต</li>
+            <li>สัญลักษณ์เหมือนกัน 2 อัน = 20 เครดิต</li>
+            <li>💎 (1 อัน) = 10 เครดิต</li>
+        </ul>
+    </div>
+
+    <script>
+        // JavaScript code remains the same
+        const symbols = ['7️⃣', '🍒', '🍋', '🍊', '🍇', '🔔', '💰', '🃏'];
+        let balance = 1000;
+        let wins = 0;
+        let plays = 0;
+        let isSpinning = false;
+
+        const spinButton = document.getElementById('spinButton');
+        const slots = Array.from(document.querySelectorAll('[id^="slot"]'));
+        const resultElement = document.getElementById('result');
+        const balanceElement = document.getElementById('balance');
+        const statsElement = document.getElementById('stats');
+        const winrateSelect = document.getElementById('winrate');
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        function generateSlotResults(winrate) {
+            if (winrate === 0) {
+                const availableSymbols = symbols.slice();
+                const result = [];
+                for (let i = 0; i < 3; i++) {
+                    const randomIndex = Math.floor(Math.random() * availableSymbols.length);
+                    result.push(availableSymbols[randomIndex]);
+                    availableSymbols.splice(randomIndex, 1);
+                }
+                return result;
+            } else if (winrate === 100) {
+                return ['💎', '💎', '💎'];
+            } else {
+                const shouldWin = Math.random() < 0.5;
+                if (shouldWin) {
+                    const winType = Math.random();
+                    if (winType < 0.2) return ['💎', '💎', '💎'];
+                    if (winType < 0.4) return ['7️⃣', '7️⃣', '7️⃣'];
+                    if (winType < 0.6) return ['🍒', '🍒', '🍒'];
+                    if (winType < 0.8) {
+                        const symbol = getRandomSymbol();
+                        return [symbol, symbol, symbol];
+                    }
+                    return ['💎', '💎', getRandomSymbol()];
+                } else {
+                    return [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()].filter(s => s !== '💎');
+                }
+            }
+        }
+
+        function updateBalance(amount) {
+            balance += amount;
+            balanceElement.textContent = `เครดิต: ${balance}`;
+        }
+
+        function updateStats() {
+            statsElement.textContent = `ชนะ: ${wins} / เล่น: ${plays}`;
+        }
+
+        function spinSlot(slot, finalSymbol) {
+            return new Promise(resolve => {
+                slot.classList.add('spinning');
+                const intervalId = setInterval(() => {
+                    slot.textContent = getRandomSymbol();
+                }, 50);
+
+                setTimeout(() => {
+                    clearInterval(intervalId);
+                    slot.textContent = finalSymbol;
+                    slot.classList.remove('spinning');
+                    resolve();
+                }, 800);
+            });
+        }
+
+        async function spin() {
+            if (isSpinning || balance < 10) return;
+            isSpinning = true;
+            spinButton.disabled = true;
+            updateBalance(-10);
+            plays++;
+            resultElement.textContent = '';
+
+            const winrate = parseInt(winrateSelect.value);
+            const results = generateSlotResults(winrate);
+
+            await Promise.all(slots.map((slot, index) => spinSlot(slot, results[index])));
+
+            const prize = calculatePrize(results, winrate);
+            if (prize > 0) {
+                wins++;
+                updateBalance(prize);
+                resultElement.textContent = `ยินดีด้วย! คุณชนะ ${prize} เครดิต!`;
+            } else {
+                resultElement.textContent = 'เสียใจด้วย ลองใหม่อีกครั้ง!';
+            }
+
+            updateStats();
+            isSpinning = false;
+            spinButton.disabled = false;
+        }
+
+        function calculatePrize(results, winrate) {
+            if (winrate === 0) return 0;
+            if (results.every(r => r === '💎')) return 1000;
+            if (results.every(r => r === '7️⃣')) return 500;
+            if (results.every(r => r === '🍒')) return 200;
+            if (results.every(r => r === results[0])) return 100;
+            if (results.filter(r => r === '💎').length === 2) return 50;
+            if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) return 20;
+            if (results.includes('💎')) return 10;
+            return 0;
+        }
+
+        spinButton.addEventListener('click', spin);
+    </script>
+</body>
+</html>
